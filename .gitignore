@@ -1,0 +1,9 @@
+.idea
+venv
+src/CFES
+src/final.png
+src/log.txt
+src/main.o
+src/matrix.txt
+src/output.txt
+src/schematic.png

@@ -151,7 +151,7 @@ Please follow the instructions below first.
                             <property name="text" translatable="yes">1</property>
                             <property name="adjustment">n_adjustment</property>
                             <property name="numeric">True</property>
-                            <property name="value">1</property>
+                            <property name="value">101</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>

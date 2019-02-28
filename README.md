@@ -1,6 +1,16 @@
 # CFES - Classical Field Equation Solver
 ###### Theoretical Physics Group Programming Project
 
+## Install on Debian/Ubuntu based Linux
+
+Run `instal_deb.sh` then:
+
+```bash
+cd src
+./CFES
+```
+
+## Run
 
 Please follow the instructions below first.
 

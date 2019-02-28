@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_splinalg.h>
+#include <time.h>
+#include <unistd.h>
 
 int type;
 int dimension;
@@ -234,7 +236,7 @@ system("python plot_schematic.py > /dev/null");
 void on_btn_matrix_clicked(GtkButton *button, app_widgets *app_wdgts) {
 
   //stores integer read from spin button widget
-  dimension = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(app_wdgts->w_sbtn_quantity));
+
   num_iterations = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(app_wdgts->w_sbtn_iterations));
   
   //outputs dimension and initialises matrix elements
@@ -245,29 +247,31 @@ void on_btn_matrix_clicked(GtkButton *button, app_widgets *app_wdgts) {
       }
    }
     f=fopen("log.txt","w");
-}
 
-void on_btn_generate_clicked (GtkButton *button, app_widgets *app_wdgts) {
-  
   FILE *fp;
   fp = fopen("matrix.txt","w");
-  f = fopen("log.txt","a");
-
   for (int i=0; i < dimension; i++) {
     for (int j=0; j < dimension; j++) {
       if (matrix[i][j] == 0.000001) {
-	fprintf(fp, "0.000001 ");
+	    fprintf(fp, "0.000001 ");
       } else {
         fprintf(fp, "%f ", matrix[i][j]);
       }
     }
   }
   fclose(fp);
+}
+
+void on_btn_generate_clicked (GtkButton *button, app_widgets *app_wdgts) {
+  f = fopen("log.txt","a");
+
   printf("Matrix successfully outputted to matrix.txt!\n");
   fprintf(f,"Matrix successfully outputted to matrix.txt!\n");
   fclose(f);
 
   printf("Passing Matrix to calculation handler\n");
+  dimension = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(app_wdgts->w_sbtn_quantity));
+  num_iterations = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(app_wdgts->w_sbtn_iterations));
   calc_handle(dimension, num_iterations);// Take tolerance from a button soon
   gtk_main_quit();
 }
@@ -289,10 +293,17 @@ int calc_handle(int dimension, int num_iterations){
   // Passes the matrix system (Ax=b) to the solver
   //solve(dimension, b, boundaryflag);
   //sparse_solve(dimension,b , boundaryflag, 2);
+
+  clock_t start = clock();
   jacobi(dimension,b ,boundaryflag, num_iterations);
+  clock_t end = clock();
+  float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+  printf("It took %.6f seconds\n", seconds);
+
+  // avoids race condition with the system call below - i.e. prints before calling python exec
+  sleep(0.1);
 
   system("python Plotter.py > /dev/null");
-
 
   exit(0);
 
